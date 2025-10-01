@@ -39,18 +39,17 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = global::tutorial_2_6.Properties.Resources.Backface_Red;
-            this.pictureBox2.Location = new System.Drawing.Point(282, 65);
+            this.pictureBox2.Location = new System.Drawing.Point(347, 128);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(173, 261);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
-            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::tutorial_2_6.Properties.Resources.Ace_Hearts;
-            this.pictureBox1.Location = new System.Drawing.Point(620, 65);
+            this.pictureBox1.Location = new System.Drawing.Point(347, 128);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(172, 261);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -59,16 +58,17 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(620, 404);
+            this.button1.Location = new System.Drawing.Point(598, 513);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(196, 77);
             this.button1.TabIndex = 3;
             this.button1.Text = "顯示正面";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(282, 404);
+            this.button2.Location = new System.Drawing.Point(308, 513);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(196, 77);
             this.button2.TabIndex = 4;
