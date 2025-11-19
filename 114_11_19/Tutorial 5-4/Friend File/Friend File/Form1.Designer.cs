@@ -1,0 +1,105 @@
+﻿namespace Friend_File
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// 必需的設計器變數。
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// 清理所有正在使用的資源。
+        /// </summary>
+        /// <param name="disposing">如果應釋放託管資源，則為 true；否則為 false。</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form 設計器生成的代碼
+
+        /// <summary>
+        /// 設計器支持所需的方法 - 請勿使用代碼編輯器修改此方法的內容。
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.promptLabel = new System.Windows.Forms.Label();
+            this.nameTextBox = new System.Windows.Forms.TextBox();
+            this.writeNameButton = new System.Windows.Forms.Button();
+            this.exitButton = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // promptLabel
+            // 
+            this.promptLabel.AutoSize = true;
+            this.promptLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.promptLabel.Location = new System.Drawing.Point(18, 26);
+            this.promptLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.promptLabel.Name = "promptLabel";
+            this.promptLabel.Size = new System.Drawing.Size(279, 40);
+            this.promptLabel.TabIndex = 0;
+            this.promptLabel.Text = "輸入朋友的名字:";
+            // 
+            // nameTextBox
+            // 
+            this.nameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.nameTextBox.Location = new System.Drawing.Point(294, 22);
+            this.nameTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.nameTextBox.Name = "nameTextBox";
+            this.nameTextBox.Size = new System.Drawing.Size(228, 48);
+            this.nameTextBox.TabIndex = 1;
+            // 
+            // writeNameButton
+            // 
+            this.writeNameButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.writeNameButton.Location = new System.Drawing.Point(25, 246);
+            this.writeNameButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.writeNameButton.Name = "writeNameButton";
+            this.writeNameButton.Size = new System.Drawing.Size(180, 55);
+            this.writeNameButton.TabIndex = 2;
+            this.writeNameButton.Text = "寫名字";
+            this.writeNameButton.UseVisualStyleBackColor = true;
+            this.writeNameButton.Click += new System.EventHandler(this.writeNameButton_Click);
+            // 
+            // exitButton
+            // 
+            this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.exitButton.Location = new System.Drawing.Point(253, 246);
+            this.exitButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new System.Drawing.Size(180, 55);
+            this.exitButton.TabIndex = 3;
+            this.exitButton.Text = "退出";
+            this.exitButton.UseVisualStyleBackColor = true;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(768, 501);
+            this.Controls.Add(this.exitButton);
+            this.Controls.Add(this.writeNameButton);
+            this.Controls.Add(this.nameTextBox);
+            this.Controls.Add(this.promptLabel);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Name = "Form1";
+            this.Text = "朋友檔案";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Label promptLabel; // 提示用的標籤，顯示輸入提示文字
+        private System.Windows.Forms.TextBox nameTextBox; // 用於輸入朋友名字的文字框
+        private System.Windows.Forms.Button writeNameButton; // 按鈕，用於觸發寫入名字的操作
+        private System.Windows.Forms.Button exitButton; // 按鈕，用於退出應用程式
+    }
+}
+

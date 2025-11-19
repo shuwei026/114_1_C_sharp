@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+
+namespace Total_Sales
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void calculateButton_Click(object sender, EventArgs e)
+        {
+            StreamReader inputFile; // 宣告 StreamReader 物件以讀取檔案  
+            decimal totalsale = 0.0m; // 儲存總銷售額的變數
+            decimal currentSale = 0.0m; // 儲存目前銷售額的變數
+
+            try
+            {
+                inputFile = File.OpenText("Sales.txt"); // 開啟 Sales.txt 檔案
+                saleslistbox.Items.Clear(); // 清除清單框中的項目
+                while (!inputFile.EndOfStream) // 讀取直到檔案結尾  
+                {
+                    string line = inputFile.ReadLine(); // 讀取一行資料
+                    saleslistbox.Items.Add(line); // 將讀取的資料加入清單框中
+                    currentSale = decimal.Parse (line); // 讀取目前銷售額  
+                    totalsale += currentSale; // 將目前銷售額加到總銷售額   
+
+                }
+                inputFile.Close(); // 關閉檔案
+                totalLabel.Text = totalsale.ToString("c"); // 顯示總銷售額
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("發生錯誤:" + ex.Message);
+                return;
+            }
+        }
+
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            // 關閉表單
+            this.Close();
+        }
+    }
+}
