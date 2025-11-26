@@ -1,0 +1,122 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Globalization;
+
+namespace Total_Sales
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void calculateButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog(); // 初始化 OpenFileDialog
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                MessageBox.Show("未選取檔案");
+                return;
+            }
+
+            string filePath = openFileDialog.FileName;
+            decimal totalSales = 0.0m; // 儲存總銷售額
+            decimal currentSales = 0.0m; // 儲存目前讀取的銷售額
+
+            try
+            {
+                using (StreamReader inputFile = new StreamReader(filePath)) // 使用 using 確保檔案正確關閉
+                {
+                    salesListBox.Items.Clear(); // 清除清單框內容
+
+                    while (!inputFile.EndOfStream)  // 讀取直到檔案結尾
+                    {
+                        string line = inputFile.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue; // 忽略空行
+
+                        line = line.Trim();
+
+                        // 嘗試解析各種可能的格式，例如:
+                        // "January, 1234.56" 或 "Jan 1234.56" 或 "1234.56"
+                        string month = string.Empty;
+                        string salesValue = null;
+
+                        // 先以常見分隔符分割 (逗號、冒號、tab)
+                        var parts = line.Split(new char[] { ',', ':', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(p => p.Trim())
+                                        .ToArray();
+
+                        if (parts.Length == 1)
+                        {
+                            // 可能是 "Month value" 或 只有數字
+                            var tokens = parts[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (tokens.Length >= 2)
+                            {
+                                month = string.Join(" ", tokens.Take(tokens.Length - 1));
+                                salesValue = tokens.Last();
+                            }
+                            else
+                            {
+                                salesValue = parts[0];
+                            }
+                        }
+                        else
+                        {
+                            // 假設最後一個部分是數值，前面是月份描述
+                            salesValue = parts.Last();
+                            month = string.Join(" ", parts.Take(parts.Length - 1));
+                        }
+
+                        // 清理數值字串：移除貨幣符號、逗號、空白，處理括號表示負數
+                        salesValue = salesValue.Replace("\u00A0", ""); // non-breaking space
+                        salesValue = salesValue.Replace("(", "-").Replace(")", "");
+                        salesValue = salesValue.Replace("$", "").Replace("NT$", "").Replace("¥", "");
+                        salesValue = salesValue.Replace(",", "").Trim();
+
+                        // 嘗試解析，先用目前文化，再用 invariant
+                        bool parsed = decimal.TryParse(salesValue, NumberStyles.Number | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out currentSales)
+                                      || decimal.TryParse(salesValue, NumberStyles.Number | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out currentSales)
+                                      || decimal.TryParse(salesValue, NumberStyles.Currency, CultureInfo.CurrentCulture, out currentSales);
+
+                        if (parsed)
+                        {
+                            var display = string.IsNullOrEmpty(month) ? currentSales.ToString("C") : (month + " " + currentSales.ToString("C"));
+                            salesListBox.Items.Add(display); // 將銷售額加入清單框                     
+                            totalSales += currentSales;  // 加到總銷售額
+                        }
+                        else
+                        {
+                            // 不中斷整個讀取，僅跳過並通知
+                            MessageBox.Show("無法解析銷售額: " + line);
+                            continue;
+                        }
+                    }
+                }
+
+                totalLabel.Text = totalSales.ToString("C"); // 顯示總銷售額
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("發生錯誤: " + ex.Message);
+            }
+        }
+
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            // 關閉表單
+            this.Close();
+        }
+    }
+}

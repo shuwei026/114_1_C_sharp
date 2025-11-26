@@ -1,0 +1,13 @@
+Month,Sales
+January 1000.0
+February 1200.0
+March 1800.0
+April 1500
+May 2100.0
+June 2500.0
+July 2000.0
+August 1600.0
+September 3200.0
+October  4400.0
+Novenber  10000.0
+December  400.0

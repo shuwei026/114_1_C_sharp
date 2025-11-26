@@ -1,0 +1,10 @@
+Month,Sales
+January,1000.0
+February,1200.0
+March,1800.0
+April (Invalid Data),dddddd
+May,2100.0
+June,2500.0
+July,2000.0
+August,1600.0
+September,1000.0

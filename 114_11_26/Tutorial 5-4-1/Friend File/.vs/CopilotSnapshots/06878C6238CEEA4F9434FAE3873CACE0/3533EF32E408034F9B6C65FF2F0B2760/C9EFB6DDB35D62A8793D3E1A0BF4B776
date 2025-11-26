@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+
+namespace Friend_File
+{
+    public partial class Form1 : Form
+    {
+        private int count = 1; // 成員(全域)變數，保持計數器的值
+        private SaveFileDialog saveFileDialog = new SaveFileDialog(); // 新增 SaveFileDialog 物件
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void writeNameButton_Click(object sender, EventArgs e)
+        {
+            StreamWriter outputFile;
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                outputFile = File.AppendText(saveFileDialog.FileName);
+                outputFile.WriteLine(count + ": " + nameTextBox.Text);
+                outputFile.Close();
+                count++; // 寫入後計數器遞增
+            }
+            else
+            {
+                MessageBox.Show("您未選擇任何檔案。");
+                return;
+            }
+        }
+
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            // 關閉表單。
+            this.Close();
+        }
+    }
+}
