@@ -1,0 +1,84 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Q2
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                decimal serviceSum = 0m;
+                // sum checked services using Tag
+                var checks = new[] { chkOilChange, chkLubrication, chkRadiator, chkTransmission, chkInspection, chkReplaceMuffler, chkTireRotation };
+                foreach (var c in checks)
+                {
+                    if (c.Checked && c.Tag is decimal)
+                        serviceSum += (decimal)c.Tag;
+                }
+
+                // parts
+                decimal parts = 0m;
+                decimal.TryParse(txtParts.Text.Trim(), out parts);
+                // tax on parts 5% (example)
+                decimal tax = Math.Round(parts * 0.05m, 2);
+
+                // labor rate per hour
+                decimal hourlyRate = 700m;
+                decimal hours = 0m;
+                decimal.TryParse(txtHours.Text.Trim(), out hours);
+                decimal labor = hours * hourlyRate;
+
+                decimal serviceAndLabor = serviceSum + labor;
+                decimal total = serviceAndLabor + parts + tax;
+
+                txtServiceLabor.Text = serviceAndLabor.ToString("0.00");
+                txtPartsCost.Text = parts.ToString("0.00");
+                txtPartsTax.Text = tax.ToString("0.00");
+                txtTotal.Text = total.ToString("0.00");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("發生錯誤: " + ex.Message);
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            // uncheck all
+            chkOilChange.Checked = false;
+            chkLubrication.Checked = false;
+            chkRadiator.Checked = false;
+            chkTransmission.Checked = false;
+            chkInspection.Checked = false;
+            chkReplaceMuffler.Checked = false;
+            chkTireRotation.Checked = false;
+
+            txtParts.Text = "";
+            txtHours.Text = "";
+
+            txtServiceLabor.Text = "";
+            txtPartsCost.Text = "";
+            txtPartsTax.Text = "";
+            txtTotal.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

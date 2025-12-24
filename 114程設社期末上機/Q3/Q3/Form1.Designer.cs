@@ -1,0 +1,221 @@
+﻿namespace Q3
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// 設計工具所需的變數。
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        private System.Windows.Forms.FlowLayoutPanel flpNumbers;
+        private System.Windows.Forms.FlowLayoutPanel flpButtons;
+        private System.Windows.Forms.Button btnGenerate;
+        private System.Windows.Forms.Button btnLoadWinning;
+        private System.Windows.Forms.Button btnExit;
+        private System.Windows.Forms.TextBox txtResults;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+
+        // new comparison panel controls
+        private System.Windows.Forms.Panel pnlCompare;
+        private System.Windows.Forms.Label lblCompareTitle;
+        private System.Windows.Forms.Label lblHitCount;
+        private System.Windows.Forms.Label lblPrizeIcon;
+        private System.Windows.Forms.Label lblPrizeText;
+
+        /// <summary>
+        /// 清除任何使用中的資源。
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form 設計工具產生的程式碼
+
+        /// <summary>
+        /// 此為設計工具支援所需的方法 - 請勿使用程式碼編輯器修改
+        /// 這個方法的內容。
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.flpNumbers = new System.Windows.Forms.FlowLayoutPanel();
+            this.flpButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnGenerate = new System.Windows.Forms.Button();
+            this.btnLoadWinning = new System.Windows.Forms.Button();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.txtResults = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.pnlCompare = new System.Windows.Forms.Panel();
+            this.lblCompareTitle = new System.Windows.Forms.Label();
+            this.lblHitCount = new System.Windows.Forms.Label();
+            this.lblPrizeIcon = new System.Windows.Forms.Label();
+            this.lblPrizeText = new System.Windows.Forms.Label();
+            this.flpButtons.SuspendLayout();
+            this.pnlCompare.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // flpNumbers
+            // 
+            this.flpNumbers.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flpNumbers.Location = new System.Drawing.Point(0, 0);
+            this.flpNumbers.Name = "flpNumbers";
+            this.flpNumbers.Padding = new System.Windows.Forms.Padding(20, 18, 20, 6);
+            this.flpNumbers.Size = new System.Drawing.Size(920, 80);
+            this.flpNumbers.TabIndex = 0;
+            this.flpNumbers.WrapContents = false;
+            // 
+            // flpButtons
+            // 
+            this.flpButtons.Controls.Add(this.btnGenerate);
+            this.flpButtons.Controls.Add(this.btnLoadWinning);
+            this.flpButtons.Controls.Add(this.btnExit);
+            this.flpButtons.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flpButtons.Location = new System.Drawing.Point(0, 80);
+            this.flpButtons.Margin = new System.Windows.Forms.Padding(0, 6, 0, 6);
+            this.flpButtons.Name = "flpButtons";
+            this.flpButtons.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
+            this.flpButtons.Size = new System.Drawing.Size(920, 90);
+            this.flpButtons.TabIndex = 1;
+            this.flpButtons.WrapContents = false;
+            // 
+            // btnGenerate
+            // 
+            this.btnGenerate.Enabled = false;
+            this.btnGenerate.Font = new System.Drawing.Font("新細明體", 20F);
+            this.btnGenerate.Location = new System.Drawing.Point(32, 16);
+            this.btnGenerate.Margin = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.btnGenerate.Name = "btnGenerate";
+            this.btnGenerate.Size = new System.Drawing.Size(220, 56);
+            this.btnGenerate.TabIndex = 0;
+            this.btnGenerate.Text = "產生號碼";
+            this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
+            // 
+            // btnLoadWinning
+            // 
+            this.btnLoadWinning.Font = new System.Drawing.Font("新細明體", 20F);
+            this.btnLoadWinning.Location = new System.Drawing.Point(276, 16);
+            this.btnLoadWinning.Margin = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.btnLoadWinning.Name = "btnLoadWinning";
+            this.btnLoadWinning.Size = new System.Drawing.Size(220, 56);
+            this.btnLoadWinning.TabIndex = 1;
+            this.btnLoadWinning.Text = "開獎號碼";
+            this.btnLoadWinning.Click += new System.EventHandler(this.btnLoadWinning_Click);
+            // 
+            // btnExit
+            // 
+            this.btnExit.Font = new System.Drawing.Font("新細明體", 20F);
+            this.btnExit.Location = new System.Drawing.Point(520, 16);
+            this.btnExit.Margin = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(120, 56);
+            this.btnExit.TabIndex = 2;
+            this.btnExit.Text = "離開";
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // txtResults
+            // 
+            this.txtResults.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.txtResults.BackColor = System.Drawing.SystemColors.Window;
+            this.txtResults.Font = new System.Drawing.Font("新細明體", 16F);
+            this.txtResults.Location = new System.Drawing.Point(20, 180);
+            this.txtResults.Margin = new System.Windows.Forms.Padding(20);
+            this.txtResults.Multiline = true;
+            this.txtResults.Name = "txtResults";
+            this.txtResults.ReadOnly = true;
+            this.txtResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtResults.Size = new System.Drawing.Size(520, 360);
+            this.txtResults.TabIndex = 2;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = "文字檔|*.txt|所有檔案|*.*";
+            this.openFileDialog1.Title = "選擇開獎號碼檔案（每行 5 個號碼，每行一個數字）";
+            // 
+            // pnlCompare
+            // 
+            this.pnlCompare.Controls.Add(this.lblCompareTitle);
+            this.pnlCompare.Controls.Add(this.lblHitCount);
+            this.pnlCompare.Controls.Add(this.lblPrizeIcon);
+            this.pnlCompare.Controls.Add(this.lblPrizeText);
+            this.pnlCompare.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pnlCompare.Location = new System.Drawing.Point(600, 170);
+            this.pnlCompare.Name = "pnlCompare";
+            this.pnlCompare.Padding = new System.Windows.Forms.Padding(10);
+            this.pnlCompare.Size = new System.Drawing.Size(320, 390);
+            this.pnlCompare.TabIndex = 3;
+            this.pnlCompare.Visible = false;
+            // 
+            // lblCompareTitle
+            // 
+            this.lblCompareTitle.AutoSize = true;
+            this.lblCompareTitle.Font = new System.Drawing.Font("新細明體", 18F, System.Drawing.FontStyle.Bold);
+            this.lblCompareTitle.ForeColor = System.Drawing.Color.DarkRed;
+            this.lblCompareTitle.Location = new System.Drawing.Point(12, 12);
+            this.lblCompareTitle.Name = "lblCompareTitle";
+            this.lblCompareTitle.Size = new System.Drawing.Size(200, 36);
+            this.lblCompareTitle.TabIndex = 0;
+            this.lblCompareTitle.Text = "比對結果：";
+            // 
+            // lblHitCount
+            // 
+            this.lblHitCount.AutoSize = true;
+            this.lblHitCount.Font = new System.Drawing.Font("新細明體", 22F, System.Drawing.FontStyle.Bold);
+            this.lblHitCount.ForeColor = System.Drawing.Color.Red;
+            this.lblHitCount.Location = new System.Drawing.Point(12, 58);
+            this.lblHitCount.Name = "lblHitCount";
+            this.lblHitCount.Size = new System.Drawing.Size(221, 44);
+            this.lblHitCount.TabIndex = 1;
+            this.lblHitCount.Text = "中0個號碼";
+            // 
+            // lblPrizeIcon
+            // 
+            this.lblPrizeIcon.AutoSize = true;
+            this.lblPrizeIcon.Font = new System.Drawing.Font("Segoe UI Emoji", 28F);
+            this.lblPrizeIcon.ForeColor = System.Drawing.Color.Red;
+            this.lblPrizeIcon.Location = new System.Drawing.Point(12, 110);
+            this.lblPrizeIcon.Name = "lblPrizeIcon";
+            this.lblPrizeIcon.Size = new System.Drawing.Size(109, 74);
+            this.lblPrizeIcon.TabIndex = 2;
+            this.lblPrizeIcon.Text = "😞";
+            // 
+            // lblPrizeText
+            // 
+            this.lblPrizeText.AutoSize = true;
+            this.lblPrizeText.Font = new System.Drawing.Font("新細明體", 20F, System.Drawing.FontStyle.Bold);
+            this.lblPrizeText.ForeColor = System.Drawing.Color.Red;
+            this.lblPrizeText.Location = new System.Drawing.Point(116, 138);
+            this.lblPrizeText.Name = "lblPrizeText";
+            this.lblPrizeText.Size = new System.Drawing.Size(140, 40);
+            this.lblPrizeText.TabIndex = 3;
+            this.lblPrizeText.Text = "沒中獎";
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(20F, 48F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(920, 560);
+            this.Controls.Add(this.pnlCompare);
+            this.Controls.Add(this.txtResults);
+            this.Controls.Add(this.flpButtons);
+            this.Controls.Add(this.flpNumbers);
+            this.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "樂透號碼產生器";
+            this.flpButtons.ResumeLayout(false);
+            this.pnlCompare.ResumeLayout(false);
+            this.pnlCompare.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+    }
+}
+

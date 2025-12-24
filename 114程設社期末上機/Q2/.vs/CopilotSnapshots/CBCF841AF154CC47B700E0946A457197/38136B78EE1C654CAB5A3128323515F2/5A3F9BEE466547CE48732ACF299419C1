@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Q2
+{
+    public partial class Form1 : Form
+    {
+        // constants for rates
+        private const decimal HourlyRate = 700m; // 每小時費率
+        private const decimal PartsTaxRate = 0.06m; // 6% 稅率
+
+        public Form1()
+        {
+            InitializeComponent();
+            // show hourly rate text
+            labelHourlyRate.Text = $"每小時 NT${HourlyRate}";
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                decimal serviceSum = 0m;
+                // sum checked services using Tag
+                var checks = new[] { chkOilChange, chkLubrication, chkRadiator, chkTransmission, chkInspection, chkReplaceMuffler, chkTireRotation };
+                foreach (var c in checks)
+                {
+                    if (c.Checked && c.Tag is decimal)
+                        serviceSum += (decimal)c.Tag;
+                }
+
+                // parts
+                decimal parts;
+                if (!decimal.TryParse(txtParts.Text.Trim(), out parts) || parts < 0)
+                {
+                    MessageBox.Show("請輸入有效的零件費用（非負數）", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtParts.Focus();
+                    return;
+                }
+
+                // tax on parts 6%
+                decimal tax = Math.Round(parts * PartsTaxRate, 2);
+
+                // labor rate per hour
+                decimal hours;
+                if (!decimal.TryParse(txtHours.Text.Trim(), out hours) || hours < 0)
+                {
+                    MessageBox.Show("請輸入有效的工時數（非負數）", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtHours.Focus();
+                    return;
+                }
+
+                decimal labor = hours * HourlyRate;
+
+                decimal serviceAndLabor = serviceSum + labor;
+                decimal total = serviceAndLabor + parts + tax;
+
+                txtServiceLabor.Text = serviceAndLabor.ToString("0.00");
+                txtPartsCost.Text = parts.ToString("0.00");
+                txtPartsTax.Text = tax.ToString("0.00");
+                txtTotal.Text = total.ToString("0.00");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("發生錯誤: " + ex.Message);
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            // uncheck all
+            chkOilChange.Checked = false;
+            chkLubrication.Checked = false;
+            chkRadiator.Checked = false;
+            chkTransmission.Checked = false;
+            chkInspection.Checked = false;
+            chkReplaceMuffler.Checked = false;
+            chkTireRotation.Checked = false;
+
+            txtParts.Text = "";
+            txtHours.Text = "";
+
+            txtServiceLabor.Text = "";
+            txtPartsCost.Text = "";
+            txtPartsTax.Text = "";
+            txtTotal.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

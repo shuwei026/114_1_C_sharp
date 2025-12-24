@@ -1,0 +1,440 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace Q3
+{
+    public partial class Form1 : Form
+    {
+        private readonly Label[] numberLabels;
+        private readonly Random rng = new Random();
+        private int[] currentNumbers = new int[0];
+        private readonly List<int[]> winningSets = new List<int[]>();
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            // 建立 5 個號碼顯示 Label，使用可讀字體
+            numberLabels = new Label[5];
+            for (int i = 0; i < numberLabels.Length; i++)
+            {
+                var lbl = new Label();
+                lbl.AutoSize = false;
+                lbl.Size = new Size(70, 48);
+                lbl.Margin = new Padding(12, 12, 12, 12);
+                lbl.TextAlign = ContentAlignment.MiddleCenter;
+                lbl.BorderStyle = BorderStyle.FixedSingle;
+                lbl.Font = new Font(this.Font.FontFamily, 18F, FontStyle.Bold);
+                lbl.BackColor = Color.WhiteSmoke;
+                lbl.Text = string.Empty;
+                numberLabels[i] = lbl;
+                flpNumbers.Controls.Add(lbl);
+            }
+
+            // 初始顯示提示文字
+            AppendResult("程式啟動。按「產生號碼」或讀取開獎檔案。");
+            UpdateWinningInfoLabel();
+
+            // Ensure compare panel initial state if present
+            try
+            {
+                lblCompareTitle.Text = "比對結果：";
+                lblHitCount.Text = "中0個號碼";
+                lblPrizeIcon.Text = "😞";
+                lblPrizeText.Text = "沒中獎";
+            }
+            catch
+            {
+                // ignore if controls not available
+            }
+        }
+
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+            currentNumbers = GenerateUniqueNumbers(5, 1, 49);
+            DisplayCurrentNumbers();
+            AppendResult("本期開獎號碼：");
+            for (int i = 0; i < currentNumbers.Length; i++)
+            {
+                AppendResult($"第{i + 1}個號碼： {currentNumbers[i]}");
+            }
+            ClearNumberHighlights();
+
+            // reset compare display
+            try
+            {
+                lblHitCount.Text = "中0個號碼";
+                lblPrizeIcon.Text = "😞";
+                lblPrizeText.Text = "沒中獎";
+                lblPrizeText.ForeColor = Color.Red;
+                lblHitCount.ForeColor = Color.Red;
+            }
+            catch { }
+
+            // If a winning set is already loaded, automatically compare against the most recent
+            if (winningSets.Count > 0)
+            {
+                var lastWin = winningSets[winningSets.Count - 1];
+                var result = CompareAgainstWinSet(lastWin);
+                UpdateComparePanel(result.hits, result.prize, result.matched);
+                HighlightMatchesAgainst(lastWin);
+            }
+        }
+
+        private void btnLoadWinning_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
+            string path = openFileDialog1.FileName;
+
+            // Clear previous data
+            winningSets.Clear();
+
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    AppendResult($"讀取失敗：檔案不存在 ({Path.GetFileName(path)})");
+                    MessageBox.Show("指定的檔案不存在。", "檔案錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var rawLines = File.ReadAllLines(path);
+                // filter out empty lines but keep order
+                var lines = rawLines.Select(l => l?.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
+
+                // Expect exactly 5 non-empty lines
+                if (lines.Count != 5)
+                {
+                    AppendResult($"檔案格式錯誤：預期 5 行有效數字，但讀到 {lines.Count} 行");
+                    MessageBox.Show("檔案格式錯誤：請確認檔案有 5 行，每行一個數字。", "格式錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var nums = new int[5];
+                for (int i = 0; i < 5; i++)
+                {
+                    var s = lines[i];
+                    if (!int.TryParse(s, out int v))
+                    {
+                        AppendResult($"第 {i + 1} 行格式錯誤：無法解析為數字 -> '{s}'");
+                        MessageBox.Show($"第 {i + 1} 行格式錯誤：無法解析為數字。", "格式錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Validate range (1..49)
+                    if (v < 1 || v > 49)
+                    {
+                        AppendResult($"第 {i + 1} 行數字超出範圍：{v}（允許範圍 1-49）");
+                        MessageBox.Show($"第 {i + 1} 行數字超出允許範圍 (1-49)。", "數值錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    nums[i] = v;
+                }
+
+                // Check duplicates
+                if (nums.Distinct().Count() != nums.Length)
+                {
+                    AppendResult("檔案格式錯誤：數字出現重複，請確認 5 個數字互不相同。");
+                    MessageBox.Show("檔案內出現重複數字，請確認每行為不同的數字。", "格式錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Keep the file order for display
+                winningSets.Add(nums);
+
+                UpdateWinningInfoLabel();
+                AppendResult($"已讀取開獎號碼（檔案: {Path.GetFileName(path)})：{string.Join(", ", nums)}");
+
+                // reset compare display
+                try
+                {
+                    lblHitCount.Text = "中0個號碼";
+                    lblPrizeIcon.Text = "😞";
+                    lblPrizeText.Text = "沒中獎";
+                    lblPrizeText.ForeColor = Color.Red;
+                    lblHitCount.ForeColor = Color.Red;
+                }
+                catch { }
+
+                // If user already generated numbers, automatically compare against newly loaded
+                if (currentNumbers != null && currentNumbers.Length > 0)
+                {
+                    var result = CompareAgainstWinSet(nums);
+                    UpdateComparePanel(result.hits, result.prize, result.matched);
+                    HighlightMatchesAgainst(nums);
+                }
+            }
+            catch (IOException ioEx)
+            {
+                AppendResult($"讀取檔案失敗：{ioEx.Message}");
+                MessageBox.Show("讀取檔案時發生 IO 錯誤：" + ioEx.Message, "IO 錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (UnauthorizedAccessException uaEx)
+            {
+                AppendResult($"讀取檔案失敗：存取被拒。{uaEx.Message}");
+                MessageBox.Show("無法存取檔案：存取被拒。請確認權限。", "存取錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                AppendResult($"讀取檔案失敗：{ex.Message}");
+                MessageBox.Show("讀取檔案時發生錯誤：" + ex.Message, "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        // 比對使用者號碼與已載入開獎號碼，並回傳獎項等級
+        private void btnCheck_Click(object sender, EventArgs e)
+        {
+            if (currentNumbers == null || currentNumbers.Length == 0)
+            {
+                MessageBox.Show("請先產生號碼。", "提醒", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (winningSets.Count == 0)
+            {
+                MessageBox.Show("尚未讀取任何開獎號碼檔案。", "提醒", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            bool anyWin = false;
+            AppendResult($"開始比對：您號碼 {string.Join(", ", currentNumbers)}");
+
+            // 對每一組開獎號碼進行比對
+            AppendResult($"比對結果：");
+
+            for (int i = 0; i < winningSets.Count; i++)
+            {
+                var win = winningSets[i];
+
+                // 計算命中數量與命中號碼（使用基本迴圈）
+                int hits = 0;
+                var matched = new List<int>();
+                for (int a = 0; a < currentNumbers.Length; a++)
+                {
+                    for (int b = 0; b < win.Length; b++)
+                    {
+                        if (currentNumbers[a] == win[b])
+                        {
+                            hits++;
+                            matched.Add(currentNumbers[a]);
+                            break;
+                        }
+                    }
+                }
+
+                string matchedText = matched.Count > 0 ? string.Join(", ", matched) : "無";
+                string prize = GetPrizeLevel(hits);
+                bool isWinner = prize != "未中獎";
+                if (isWinner) anyWin = true;
+
+                // concise per-set message
+                AppendResult($"第 {i + 1} 組：開獎號碼 {string.Join(", ", win)}");
+                AppendResult($"  您命中：{hits} 個號碼（{matchedText}）");
+                AppendResult($"  是否中獎：{(isWinner ? "是" : "否")}{(isWinner ? "，獎項: " + prize : string.Empty)}");
+                AppendResult("-----------------------------");
+
+                // 若為最後一組，於號碼顯示區高亮命中
+                if (i == winningSets.Count - 1)
+                {
+                    HighlightMatchesAgainst(win);
+
+                    // 更新右側比較面板
+                    try
+                    {
+                        lblHitCount.Text = $"中{hits}個號碼";
+                        lblPrizeText.Text = isWinner ? prize : "沒中獎";
+                        lblPrizeIcon.Text = isWinner ? "🎉" : "😞";
+                        lblPrizeText.ForeColor = isWinner ? Color.DarkGreen : Color.Red;
+                        lblHitCount.ForeColor = isWinner ? Color.DarkGreen : Color.Red;
+                    }
+                    catch { }
+                }
+            }
+
+            // overall summary
+            if (!anyWin)
+            {
+                AppendResult("總結：未中獎。請再接再厲。");
+            }
+            else
+            {
+                AppendResult("總結：恭喜！您至少中獎一組。詳情請見上方列表。");
+            }
+        }
+
+        // Compare helper that returns hits, prize, matched numbers
+        private (int hits, string prize, List<int> matched) CompareAgainstWinSet(int[] win)
+        {
+            int hits = 0;
+            var matched = new List<int>();
+            for (int a = 0; a < currentNumbers.Length; a++)
+            {
+                for (int b = 0; b < win.Length; b++)
+                {
+                    if (currentNumbers[a] == win[b])
+                    {
+                        hits++;
+                        matched.Add(currentNumbers[a]);
+                        break;
+                    }
+                }
+            }
+            string prize = GetPrizeLevel(hits);
+            return (hits, prize, matched);
+        }
+
+        private void UpdateComparePanel(int hits, string prize, List<int> matched)
+        {
+            try
+            {
+                lblHitCount.Text = $"中{hits}個號碼";
+                lblPrizeText.Text = prize == "未中獎" ? "沒中獎" : prize;
+                lblPrizeIcon.Text = prize == "未中獎" ? "😞" : "🎉";
+                bool isWinner = prize != "未中獎";
+                lblPrizeText.ForeColor = isWinner ? Color.DarkGreen : Color.Red;
+                lblHitCount.ForeColor = isWinner ? Color.DarkGreen : Color.Red;
+            }
+            catch { }
+        }
+
+        private string GetPrizeLevel(int hits)
+        {
+            // 定義獎項等級：依命中數量給予對應等級
+            // 5 -> 頭獎, 4 -> 特等, 3 -> 二等, 2 -> 三等, 1 -> 安慰獎, 0 -> 未中獎
+            switch (hits)
+            {
+                case 5:
+                    return "頭獎（全中 5 顆）";
+                case 4:
+                    return "特等獎（中 4 顆）";
+                case 3:
+                    return "二等獎（中 3 顆）";
+                case 2:
+                    return "三等獎（中 2 顆）";
+                case 1:
+                    return "安慰獎（中 1 顆）";
+                default:
+                    return "未中獎";
+            }
+        }
+
+        private int[] GenerateUniqueNumbers(int count, int minInclusive, int maxInclusive)
+        {
+            // Basic array-based algorithm: avoid advanced collections and LINQ for generation
+            int range = maxInclusive - minInclusive + 1;
+            if (count > range)
+            {
+                throw new ArgumentException("count is greater than the available range");
+            }
+
+            int[] result = new int[count];
+            bool[] used = new bool[range]; // index 0 corresponds to minInclusive
+            int filled = 0;
+
+            while (filled < count)
+            {
+                int val = rng.Next(range) + minInclusive; // random in [minInclusive, maxInclusive]
+                int idx = val - minInclusive;
+                if (!used[idx])
+                {
+                    used[idx] = true;
+                    result[filled] = val;
+                    filled++;
+                }
+                // otherwise repeat
+            }
+
+            // Simple bubble sort to order numbers (basic constructs only)
+            for (int i = 0; i < count - 1; i++)
+            {
+                for (int j = 0; j < count - 1 - i; j++)
+                {
+                    if (result[j] > result[j + 1])
+                    {
+                        int tmp = result[j];
+                        result[j] = result[j + 1];
+                        result[j + 1] = tmp;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private int[] ParseLineToNumbers(string line)
+        {
+            // 支援逗號或空白分隔，改為 4 個號碼
+            var tokens = line.Split(new[] { ',', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length != 4) return null;
+
+            int[] nums = new int[4];
+            for (int i = 0; i < 4; i++)
+            {
+                if (!int.TryParse(tokens[i], out int v)) return null;
+                if (v < 1 || v > 49) return null;
+                nums[i] = v;
+            }
+
+            if (nums.Distinct().Count() != 4) return null;
+            Array.Sort(nums);
+            return nums;
+        }
+
+        private void DisplayCurrentNumbers()
+        {
+            for (int i = 0; i < numberLabels.Length; i++)
+            {
+                numberLabels[i].Text = currentNumbers.Length > i ? currentNumbers[i].ToString() : string.Empty;
+                numberLabels[i].BackColor = Color.WhiteSmoke;
+            }
+        }
+
+        private void AppendResult(string text)
+        {
+            // 保留簡潔輸出（不加入時間戳，呈現與你畫面相近的內容）
+            txtResults.AppendText($"{text}{Environment.NewLine}");
+        }
+
+        private void UpdateWinningInfoLabel()
+        {
+            // Designer 中未顯示此項，如需顯示可再加入 label
+        }
+
+        private void HighlightMatchesAgainst(int[] winSet)
+        {
+            ClearNumberHighlights();
+            if (winSet == null || winSet.Length == 0) return;
+
+            var winSetHash = new HashSet<int>(winSet);
+            for (int i = 0; i < currentNumbers.Length; i++)
+            {
+                if (winSetHash.Contains(currentNumbers[i]))
+                {
+                    numberLabels[i].BackColor = Color.LightGreen;
+                }
+                else
+                {
+                    numberLabels[i].BackColor = Color.WhiteSmoke;
+                }
+            }
+        }
+
+        private void ClearNumberHighlights()
+        {
+            foreach (var lbl in numberLabels)
+            {
+                lbl.BackColor = Color.WhiteSmoke;
+            }
+        }
+    }
+}

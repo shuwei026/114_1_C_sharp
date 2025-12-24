@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Q2
+{
+    public partial class Form1 : Form
+    {
+        // constants for rates
+        private const decimal HourlyRate = 600m; // 每小時費率 (NT$600)
+        private const decimal PartsTaxRate = 0.06m; // 6% 稅率
+
+        public Form1()
+        {
+            InitializeComponent();
+            // show hourly rate text
+            labelHourlyRate.Text = $"每小時 NT${HourlyRate}";
+            // Note: transmission service updated to NT$4,200 in designer
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            Recalculate(showMessages: true);
+        }
+
+        // realtime input changed handler
+        private void InputChanged(object sender, EventArgs e)
+        {
+            Recalculate(showMessages: false);
+        }
+
+        private void Recalculate(bool showMessages)
+        {
+            try
+            {
+                decimal serviceSum = 0m;
+                // sum checked services using Tag
+                var checks = new[] { chkOilChange, chkLubrication, chkRadiator, chkTransmission, chkInspection, chkReplaceMuffler, chkTireRotation };
+                foreach (var c in checks)
+                {
+                    if (c.Checked && c.Tag is decimal)
+                        serviceSum += (decimal)c.Tag;
+                }
+
+                // parts
+                decimal parts = 0m;
+                if (!string.IsNullOrWhiteSpace(txtParts.Text))
+                {
+                    if (!decimal.TryParse(txtParts.Text.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out parts) || parts < 0)
+                    {
+                        if (showMessages)
+                            MessageBox.Show("請輸入有效的零件費用（非負數）", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        // don't return here for realtime; just skip and show zeros
+                        parts = 0m;
+                    }
+                }
+
+                // tax on parts 6%
+                decimal tax = Math.Round(parts * PartsTaxRate, 2);
+
+                // labor rate per hour
+                decimal hours = 0m;
+                if (!string.IsNullOrWhiteSpace(txtHours.Text))
+                {
+                    if (!decimal.TryParse(txtHours.Text.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out hours) || hours < 0)
+                    {
+                        if (showMessages)
+                            MessageBox.Show("請輸入有效的工時數（非負數）", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        hours = 0m;
+                    }
+                }
+
+                decimal labor = hours * HourlyRate;
+
+                decimal serviceFee = serviceSum;
+                decimal serviceAndLabor = serviceFee + labor;
+                decimal total = serviceAndLabor + parts + tax;
+
+                // format as currency (NT$)
+                var ci = new CultureInfo("zh-TW");
+                txtServiceFee.Text = serviceFee.ToString("C0", ci);
+                txtLabor.Text = labor.ToString("C0", ci);
+                txtPartsCost.Text = parts.ToString("C0", ci);
+                txtPartsTax.Text = tax.ToString("C0", ci);
+                txtTotal.Text = total.ToString("C0", ci);
+            }
+            catch (Exception ex)
+            {
+                if (showMessages)
+                    MessageBox.Show("發生錯誤: " + ex.Message);
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            // uncheck all
+            chkOilChange.Checked = false;
+            chkLubrication.Checked = false;
+            chkRadiator.Checked = false;
+            chkTransmission.Checked = false;
+            chkInspection.Checked = false;
+            chkReplaceMuffler.Checked = false;
+            chkTireRotation.Checked = false;
+
+            txtParts.Text = "";
+            txtHours.Text = "";
+
+            txtServiceFee.Text = "";
+            txtLabor.Text = "";
+            txtPartsCost.Text = "";
+            txtPartsTax.Text = "";
+            txtTotal.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
